@@ -1,0 +1,37 @@
+# SpecKit Configuration
+version: "1.0"
+project:
+  name: "Team Kanban Board"
+  description: "A collaborative Kanban board for team task management"
+
+specs:
+  directory: "./specs"
+  format: "markdown"
+
+templates:
+  directory: "./templates"
+
+commands:
+  - name: "create-feature"
+    description: "Create a new feature specification"
+    template: "feature-spec.md"
+  - name: "create-component"
+    description: "Create a new component specification"
+    template: "component-spec.md"
+  - name: "create-api"
+    description: "Create a new API endpoint specification"
+    template: "api-spec.md"
+
+workflow:
+  stages:
+    - name: "spec"
+      description: "Write feature specification"
+    - name: "design"
+      description: "Design component architecture"
+    - name: "implement"
+      description: "Implement the feature"
+    - name: "test"
+      description: "Write and run tests"
+    - name: "review"
+      description: "Code review and QA"
+
