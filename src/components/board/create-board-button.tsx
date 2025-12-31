@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/activity'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -55,6 +56,15 @@ export function CreateBoardButton() {
       { board_id: data.id, title: 'In Progress', position: 1 },
       { board_id: data.id, title: 'Done', position: 2 },
     ])
+
+    // Log activity
+    await logActivity({
+      boardId: data.id,
+      action: 'created',
+      entityType: 'board',
+      entityId: data.id,
+      metadata: { title: data.title },
+    })
 
     setIsOpen(false)
     setTitle('')

@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trash2, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity, getBoardIdFromCardId } from '@/lib/activity'
 import { formatRelativeTime } from '@/lib/utils'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar } from '@/components/ui/avatar'
+import { DueDatePicker } from './due-date-picker'
 import type { CardWithDetails, Comment, Profile } from '@/types'
 
 interface CardModalProps {
@@ -61,6 +63,20 @@ export function CardModal({ card, isOpen, onClose }: CardModalProps) {
       })
       .eq('id', card.id)
 
+    // Log activity if title changed
+    if (title.trim() !== card.title) {
+      const boardId = await getBoardIdFromCardId(card.id)
+      if (boardId) {
+        await logActivity({
+          boardId,
+          action: 'updated',
+          entityType: 'card',
+          entityId: card.id,
+          metadata: { title: title.trim() },
+        })
+      }
+    }
+
     setLoading(false)
     router.refresh()
   }
@@ -69,6 +85,19 @@ export function CardModal({ card, isOpen, onClose }: CardModalProps) {
     if (!confirm('Delete this card?')) return
 
     const supabase = createClient()
+
+    // Log activity before deleting
+    const boardId = await getBoardIdFromCardId(card.id)
+    if (boardId) {
+      await logActivity({
+        boardId,
+        action: 'deleted',
+        entityType: 'card',
+        entityId: card.id,
+        metadata: { title: card.title },
+      })
+    }
+
     await supabase.from('cards').delete().eq('id', card.id)
     onClose()
     router.refresh()
@@ -81,11 +110,25 @@ export function CardModal({ card, isOpen, onClose }: CardModalProps) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    await supabase.from('comments').insert({
+    const { data: comment } = await supabase.from('comments').insert({
       card_id: card.id,
       user_id: user.id,
       content: newComment.trim(),
-    })
+    }).select().single()
+
+    // Log activity
+    if (comment) {
+      const boardId = await getBoardIdFromCardId(card.id)
+      if (boardId) {
+        await logActivity({
+          boardId,
+          action: 'commented',
+          entityType: 'comment',
+          entityId: comment.id,
+          metadata: { title: card.title },
+        })
+      }
+    }
 
     setNewComment('')
     fetchComments()
@@ -126,6 +169,13 @@ export function CardModal({ card, isOpen, onClose }: CardModalProps) {
             placeholder="Add a description..."
           />
         </div>
+
+        {/* Due Date */}
+        <DueDatePicker
+          cardId={card.id}
+          currentDueDate={card.due_date}
+          onUpdate={() => fetchComments()}
+        />
 
         {/* Assignee info */}
         {card.assignee && (

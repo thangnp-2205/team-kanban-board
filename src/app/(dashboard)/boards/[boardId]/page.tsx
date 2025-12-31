@@ -48,7 +48,7 @@ export default async function BoardPage({ params }: BoardPageProps) {
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
-      <BoardHeader board={board} />
+      <BoardHeader board={board} currentUserId={user.id} />
       <KanbanBoard
         boardId={board.id}
         columns={sortedColumns}

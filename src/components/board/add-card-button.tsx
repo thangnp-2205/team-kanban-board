@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity, getBoardIdFromColumnId } from '@/lib/activity'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -31,13 +32,27 @@ export function AddCardButton({ columnId, position, members }: AddCardButtonProp
     setLoading(true)
 
     const supabase = createClient()
-    await supabase.from('cards').insert({
+    const { data: card } = await supabase.from('cards').insert({
       column_id: columnId,
       title: title.trim(),
       description: description.trim() || null,
       assignee_id: assigneeId,
       position,
-    })
+    }).select().single()
+
+    // Log activity
+    if (card) {
+      const boardId = await getBoardIdFromColumnId(columnId)
+      if (boardId) {
+        await logActivity({
+          boardId,
+          action: 'created',
+          entityType: 'card',
+          entityId: card.id,
+          metadata: { title: card.title },
+        })
+      }
+    }
 
     setIsOpen(false)
     setTitle('')

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/activity'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -23,11 +24,22 @@ export function AddColumnButton({ boardId, position }: AddColumnButtonProps) {
 
     setLoading(true)
     const supabase = createClient()
-    await supabase.from('columns').insert({
+    const { data: column } = await supabase.from('columns').insert({
       board_id: boardId,
       title: title.trim(),
       position,
-    })
+    }).select().single()
+
+    // Log activity
+    if (column) {
+      await logActivity({
+        boardId,
+        action: 'created',
+        entityType: 'column',
+        entityId: column.id,
+        metadata: { title: column.title },
+      })
+    }
 
     setTitle('')
     setIsAdding(false)

@@ -18,6 +18,7 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/activity'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import { AddColumnButton } from './add-column-button'
@@ -129,6 +130,25 @@ export function KanbanBoard({ boardId, columns: initialColumns, members }: Kanba
         .from('cards')
         .update({ position: update.position })
         .eq('id', update.id)
+    }
+
+    // Log activity if column changed
+    if (activeColumnId !== overColumnId) {
+      const fromColumn = columns.find((col) => col.id === activeColumnId)
+      const toColumn = columns.find((col) => col.id === overColumnId)
+      const card = column.cards.find((c) => c.id === active.id)
+
+      await logActivity({
+        boardId,
+        action: 'moved',
+        entityType: 'card',
+        entityId: active.id as string,
+        metadata: {
+          title: card?.title,
+          from_column: fromColumn?.title,
+          to_column: toColumn?.title,
+        },
+      })
     }
 
     router.refresh()

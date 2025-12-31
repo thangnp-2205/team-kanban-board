@@ -10,13 +10,14 @@
 - ✅ **Drag & Drop**: Kéo thả cards giữa các columns
 - ✅ **Comments**: Thêm comment vào cards
 - ✅ **Assignee**: Gán người phụ trách cho cards
+- ✅ **Team Collaboration**: Mời thành viên vào board, phân quyền (Owner/Admin/Member)
 - ✅ **Activity Log**: Theo dõi hoạt động trên board
 - ✅ **Authentication**: Đăng ký/Đăng nhập với Supabase Auth
-- ✅ **Real-time**: Cập nhật real-time với Supabase
+- ✅ **Row Level Security**: Bảo mật dữ liệu với RLS policies
 
 ## 🛠 Công nghệ
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, React
+- **Frontend**: Next.js 14 (App Router), TypeScript, React 18
 - **Styling**: Tailwind CSS
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
@@ -77,6 +78,12 @@ team-kanban-board/
 │   │   ├── (auth)/             # Auth pages (login, register)
 │   │   ├── (dashboard)/        # Dashboard pages
 │   │   │   └── boards/         # Board pages
+│   │   ├── api/                # API Routes
+│   │   │   ├── boards/
+│   │   │   ├── cards/
+│   │   │   ├── columns/
+│   │   │   ├── comments/
+│   │   │   └── activity/
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
@@ -85,6 +92,7 @@ team-kanban-board/
 │   │   └── shared/             # Shared components
 │   ├── lib/
 │   │   ├── supabase/           # Supabase client
+│   │   ├── activity.ts         # Activity logging helpers
 │   │   └── utils.ts
 │   ├── types/                  # TypeScript types
 │   └── middleware.ts

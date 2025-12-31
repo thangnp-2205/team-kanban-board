@@ -7,8 +7,9 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { logActivity } from '@/lib/activity'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,6 +49,15 @@ export function KanbanColumn({ column, cards, members }: KanbanColumnProps) {
       .update({ title: title.trim() })
       .eq('id', column.id)
 
+    // Log activity
+    await logActivity({
+      boardId: column.board_id,
+      action: 'updated',
+      entityType: 'column',
+      entityId: column.id,
+      metadata: { title: title.trim(), old_title: column.title },
+    })
+
     setIsEditing(false)
     router.refresh()
   }
@@ -56,6 +66,16 @@ export function KanbanColumn({ column, cards, members }: KanbanColumnProps) {
     if (!confirm('Delete this column and all its cards?')) return
 
     const supabase = createClient()
+
+    // Log activity before deleting
+    await logActivity({
+      boardId: column.board_id,
+      action: 'deleted',
+      entityType: 'column',
+      entityId: column.id,
+      metadata: { title: column.title },
+    })
+
     await supabase.from('columns').delete().eq('id', column.id)
     router.refresh()
   }
