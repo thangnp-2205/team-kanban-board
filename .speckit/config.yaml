@@ -1,12 +1,23 @@
 # SpecKit Configuration
+# Team Kanban Board - Specification-Driven Development
 version: "1.0"
+
 project:
   name: "Team Kanban Board"
   description: "A collaborative Kanban board for team task management"
+  version: "1.0.0"
+  tech_stack:
+    - "Next.js 14 (App Router)"
+    - "TypeScript"
+    - "Supabase"
+    - "Tailwind CSS"
+    - "@dnd-kit/core"
+  deployment: "Vercel"
 
 specs:
   directory: "./specs"
   format: "markdown"
+  index: "./specs/README.md"
 
 templates:
   directory: "./templates"
@@ -15,23 +26,99 @@ commands:
   - name: "create-feature"
     description: "Create a new feature specification"
     template: "feature-spec.md"
+    output: "./specs/05-features/{name}.md"
+
   - name: "create-component"
     description: "Create a new component specification"
     template: "component-spec.md"
+    output: "./specs/components/{name}.md"
+
   - name: "create-api"
     description: "Create a new API endpoint specification"
     template: "api-spec.md"
+    output: "./specs/api/{name}.md"
+
+  - name: "create-user-story"
+    description: "Create a new user story"
+    template: "user-story.md"
+    output: "./specs/user-stories/{name}.md"
 
 workflow:
   stages:
     - name: "spec"
-      description: "Write feature specification"
+      description: "Write feature specification with acceptance criteria"
+      checklist:
+        - "User stories defined"
+        - "Acceptance criteria listed"
+        - "Data structures documented"
+        - "API endpoints specified"
+        - "UI mockups/wireframes created"
+
     - name: "design"
-      description: "Design component architecture"
+      description: "Design component architecture and data flow"
+      checklist:
+        - "Component hierarchy defined"
+        - "State management planned"
+        - "Database schema reviewed"
+        - "API contracts finalized"
+
     - name: "implement"
-      description: "Implement the feature"
+      description: "Implement the feature following the spec"
+      checklist:
+        - "Code matches spec requirements"
+        - "TypeScript types aligned with spec"
+        - "Error handling implemented"
+        - "Loading states implemented"
+
     - name: "test"
-      description: "Write and run tests"
+      description: "Write and run tests based on acceptance criteria"
+      checklist:
+        - "Unit tests for utilities"
+        - "Integration tests for API"
+        - "E2E tests for user flows"
+        - "All acceptance criteria tested"
+
     - name: "review"
-      description: "Code review and QA"
+      description: "Code review and QA verification"
+      checklist:
+        - "Code reviewed by peer"
+        - "Spec requirements verified"
+        - "No regression in existing features"
+        - "Performance acceptable"
+
+# Specification Index
+spec_files:
+  overview: "./specs/01-project-overview.md"
+  database: "./specs/02-database-schema.md"
+  api: "./specs/03-api-endpoints.md"
+  components: "./specs/04-components.md"
+  ui_ux: "./specs/06-ui-ux.md"
+  features:
+    auth: "./specs/05-features/auth.md"
+    boards: "./specs/05-features/boards.md"
+    columns: "./specs/05-features/columns.md"
+    cards: "./specs/05-features/cards.md"
+    comments: "./specs/05-features/comments.md"
+    members: "./specs/05-features/members.md"
+    activity_log: "./specs/05-features/activity-log.md"
+
+# Development Guidelines
+guidelines:
+  code_style:
+    - "Use TypeScript strict mode"
+    - "Follow Next.js App Router conventions"
+    - "Use Tailwind CSS for styling"
+    - "Prefer server components where possible"
+    - "Use 'use client' only when necessary"
+
+  naming:
+    - "Components: PascalCase (e.g., KanbanCard)"
+    - "Files: kebab-case (e.g., kanban-card.tsx)"
+    - "Hooks: camelCase with 'use' prefix (e.g., useUser)"
+    - "API routes: REST conventions"
+
+  git:
+    - "Commit messages: conventional commits"
+    - "Branch naming: feature/*, bugfix/*, hotfix/*"
+    - "PR template with checklist"
 

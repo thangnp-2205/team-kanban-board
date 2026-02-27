@@ -146,11 +146,53 @@ npx @cloudflare/next-on-pages
 Để sử dụng MCP Server Context7 trong quá trình phát triển, tham khảo documentation tại:
 https://github.com/context7/mcp-server
 
-## 📝 SpecKit (SDD Workflow)
+## 📝 Specification-Driven Development (SDD)
 
-Project này sử dụng Specification Driven Development. Các specs được lưu tại:
-- `.speckit/specs/` - Feature specifications
-- `.speckit/config.yaml` - SpecKit configuration
+Project này được phát triển theo phương pháp **Specification-Driven Development** sử dụng SpecKit.
+
+### SDD Workflow
+
+```
+1. SPEC     → Viết specification chi tiết (acceptance criteria, data structures, API)
+2. DESIGN   → Thiết kế component architecture & data flow
+3. IMPLEMENT → Implement code theo spec
+4. TEST     → Viết tests theo acceptance criteria
+5. REVIEW   → Code review & QA verification
+```
+
+### Specification Files
+
+```
+.speckit/
+├── config.yaml                   # SpecKit configuration
+├── templates/                    # Spec templates
+│   ├── feature-spec.md
+│   ├── component-spec.md
+│   ├── api-spec.md
+│   └── user-story.md
+└── specs/
+    ├── README.md                 # Spec index
+    ├── 01-project-overview.md    # Project requirements & scope
+    ├── 02-database-schema.md     # Database design & RLS policies
+    ├── 03-api-endpoints.md       # API specifications
+    ├── 04-components.md          # Component specifications
+    ├── 05-features/              # Feature specifications
+    │   ├── auth.md               # Authentication
+    │   ├── boards.md             # Board management
+    │   ├── columns.md            # Column management
+    │   ├── cards.md              # Card management (drag-drop)
+    │   ├── comments.md           # Comment system
+    │   ├── members.md            # Member management
+    │   └── activity-log.md       # Activity logging
+    └── 06-ui-ux.md               # UI/UX design system
+```
+
+### Sử dụng Specs
+
+1. **Trước khi code**: Đọc spec tương ứng để hiểu requirements
+2. **Trong khi code**: Follow acceptance criteria và data structures
+3. **Sau khi code**: Verify implementation matches spec
+4. **Testing**: Viết tests dựa trên acceptance criteria trong spec
 
 ## 📄 License
 
